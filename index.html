@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="一个轻盈的新标签页。搜索、常用网站，然后开始探索。">
+  <meta name="referrer" content="no-referrer">
+  <title>栖页 · 新标签页</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=c9554dffcea9">
+  <script type="module" src="./app.js?v=c9554dffcea9"></script>
+</head>
+<body>
+  <main>
+    <div class="intro">
+      <h1 class="site-brand"><svg viewBox="0 0 32 32" width="48" height="48" aria-hidden="true"><path d="M16 3 29 16 16 29 3 16Z" fill="currentColor" opacity=".13"/><path d="M16 7 25 16 16 25 7 16Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 16h8M16 12v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>栖页</span></h1>
+      <p id="daily-quote" class="daily-quote">愿你今天，也有新的发现。</p>
+      <p class="subtitle" id="quote-source">每日一言</p>
+    </div>
+    <section class="search-section" aria-label="网页搜索">
+      <form id="search-form" action="https://www.google.com/search" method="get" role="search">
+        <div class="engine-control">
+          <button class="engine-button" id="engine-toggle" type="button" aria-label="选择搜索引擎，当前 Google" aria-haspopup="menu" aria-expanded="false" aria-controls="engine-menu"><span class="engine-mark" data-engine="google" id="engine-mark" aria-hidden="true">G</span><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div class="engine-menu" id="engine-menu" role="menu" hidden>
+            <button type="button" role="menuitemradio" aria-checked="true" data-engine="google"><span class="engine-mark" data-engine="google">G</span>Google<span class="menu-command">!g</span></button>
+            <button type="button" role="menuitemradio" aria-checked="false" data-engine="bing"><span class="engine-mark" data-engine="bing">b</span>Bing<span class="menu-command">!b</span></button>
+            <button type="button" role="menuitemradio" aria-checked="false" data-engine="duckduckgo"><span class="engine-mark" data-engine="duckduckgo">D</span>DuckDuckGo<span class="menu-command">!d</span></button>
+            <button type="button" role="menuitemradio" aria-checked="false" data-engine="baidu"><span class="engine-mark" data-engine="baidu">度</span>百度<span class="menu-command">!bd</span></button>
+          </div>
+        </div>
+        <label class="visually-hidden" for="query">搜索内容</label>
+        <input id="query" name="q" type="search" placeholder="用 Google 搜索" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" required>
+        <button class="submit-button" type="submit" aria-label="搜索"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </form>
+    </section>
+    <section class="shortcuts-section" aria-labelledby="shortcuts-title"><h2 id="shortcuts-title" class="visually-hidden">快捷方式</h2><div class="shortcuts"><a class="shortcut" href="https://zhiim.eu.org" data-icon="https://zhiim.eu.org/favicon.ico" aria-label="打开 Glance" rel="noreferrer"><span class="shortcut-icon" aria-hidden="true"><span class="shortcut-letter">G</span></span><span class="shortcut-name">Glance</span><span class="shortcut-domain">zhiim.eu.org</span></a>
+<a class="shortcut" href="https://rss.zhiim.eu.org" data-icon="https://rss.zhiim.eu.org/favicon.ico" aria-label="打开 ReactFlux" rel="noreferrer"><span class="shortcut-icon" aria-hidden="true"><span class="shortcut-letter">R</span></span><span class="shortcut-name">ReactFlux</span><span class="shortcut-domain">rss.zhiim.eu.org</span></a>
+<a class="shortcut" href="https://notes.zhiim.eu.org" data-icon="https://notes.zhiim.eu.org/favicon.ico" aria-label="打开 SilverBullet" rel="noreferrer"><span class="shortcut-icon" aria-hidden="true"><span class="shortcut-letter">S</span></span><span class="shortcut-name">SilverBullet</span><span class="shortcut-domain">notes.zhiim.eu.org</span></a>
+<a class="shortcut" href="https://ng.117823.xyz" data-icon="https://ng.117823.xyz/favicon.ico" aria-label="打开 AriaNg" rel="noreferrer"><span class="shortcut-icon" aria-hidden="true"><span class="shortcut-letter">A</span></span><span class="shortcut-name">AriaNg</span><span class="shortcut-domain">ng.117823.xyz</span></a>
+<a class="shortcut" href="https://chatgpt.com" data-icon="https://chatgpt.com/favicon.ico" aria-label="打开 ChatGPT" rel="noreferrer"><span class="shortcut-icon" aria-hidden="true"><span class="shortcut-letter">C</span></span><span class="shortcut-name">ChatGPT</span><span class="shortcut-domain">chatgpt.com</span></a>
+<a class="shortcut" href="https://zb.zhiim.eu.org" data-icon="https://zb.zhiim.eu.org/favicon.ico" aria-label="打开 ZashBoard" rel="noreferrer"><span class="shortcut-icon" aria-hidden="true"><span class="shortcut-letter">Z</span></span><span class="shortcut-name">ZashBoard</span><span class="shortcut-domain">zb.zhiim.eu.org</span></a></div></section>
+  </main>
+</body>
+</html>
