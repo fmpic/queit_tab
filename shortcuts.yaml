@@ -1,0 +1,15 @@
+# 修改后运行 python3 build.py，再将 dist/ 部署到任意静态服务器。
+# icon 可省略，默认从该站点的 /favicon.ico 获取。也可填写完整图标 URL。
+shortcuts:
+  - name: Glance
+    url: https://zhiim.eu.org
+  - name: ReactFlux
+    url: https://rss.zhiim.eu.org
+  - name: SilverBullet
+    url: https://notes.zhiim.eu.org
+  - name: AriaNg
+    url: https://ng.117823.xyz
+  - name: ChatGPT
+    url: https://chatgpt.com
+  - name: ZashBoard
+    url: https://zb.zhiim.eu.org
