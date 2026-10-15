@@ -1,11 +1,12 @@
 /* A tiny static-shell and favicon cache. No proxy, analytics or backend. */
-const VERSION = '5fe712b8e84c';
+const VERSION = '9088f783f310';
 const SHELL = 'quiet-tab-shell-' + VERSION;
 const ICONS = 'quiet-tab-icons-v1';
-const FAILURES = 'quiet-tab-icon-failures-v1';
+// v1 refreshed the retry deadline on every page load; discard those markers once.
+const FAILURES = 'quiet-tab-icon-failures-v2';
 const ROOT = new URL('./', self.location.href);
 const ASSETS = ['index.html', 'styles.css?v=' + VERSION, 'app.js?v=' + VERSION, 'favicon.svg'].map(path => new URL(path, ROOT).href);
-const ALLOWED_ICONS = new Set(["https://chatgpt.com/favicon.ico", "https://ng.117823.xyz/favicon.ico", "https://note.zhiim.eu.org/favicon.ico", "https://rss.zhiim.eu.org/favicon.ico", "https://zb.zhiim.eu.org/favicon.ico", "https://zhiim.eu.org/favicon.ico"]);
+const ALLOWED_ICONS = new Set(["https://cdn.oaistatic.com/_next/static/media/favicon-32x32.be48395e.png", "https://ng.117823.xyz/favicon.ico", "https://note.zhiim.eu.org/.client/favicon.svg", "https://rss.zhiim.eu.org/favicon.ico", "https://zb.zhiim.eu.org/favicon.ico", "https://zhiim.eu.org/static/1dcaffa9fa/favicon.svg"]);
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
@@ -16,7 +17,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(key => key.startsWith('quiet-tab-shell-') && key !== SHELL).map(key => caches.delete(key)));
+    await Promise.all(keys.filter(key => (key.startsWith('quiet-tab-shell-') && key !== SHELL) || key === 'quiet-tab-icon-failures-v1').map(key => caches.delete(key)));
     // Remove stale icons after a deployment changes YAML; bound cache growth.
     for (const name of [ICONS, FAILURES]) {
       const cache = await caches.open(name);
@@ -61,12 +62,23 @@ self.addEventListener('fetch', event => {
   }
   if (request.mode === 'navigate' && (url.pathname === ROOT.pathname || url.pathname === new URL('index.html', ROOT).pathname)) {
     event.respondWith((async () => {
+      // The installing worker fetches a complete new shell before taking over.
+      // Reopening a tab must not wait for the network or mix shell versions.
+      try {
+        const cache = await caches.open(SHELL);
+        const cached = await cache.match(new URL('index.html', ROOT).href);
+        if (cached) return cached;
+      } catch { /* Storage is optional; fall back to the network. */ }
       try { return await fetch(request); }
-      catch { return (await caches.match(new URL('index.html', ROOT).href)) || new Response('Offline', { status: 503 }); }
+      catch { return new Response('Offline', { status: 503 }); }
     })());
   } else if (ASSETS.includes(request.url)) {
     event.respondWith((async () => {
-      try { const cached = await caches.match(request); if (cached) return cached; } catch { /* disabled storage */ }
+      try {
+        const cache = await caches.open(SHELL);
+        const cached = await cache.match(request);
+        if (cached) return cached;
+      } catch { /* disabled storage */ }
       return fetch(request);
     })());
   }
@@ -78,7 +90,11 @@ self.addEventListener('message', event => {
       const cache = await caches.open(ICONS);
       await cache.delete(event.data.url);
       const failures = await caches.open(FAILURES);
-      await failures.put(event.data.url, new Response(String(Date.now())));
+      const failed = await failures.match(event.data.url);
+      const now = Date.now();
+      // A suppressed request also fires img.onerror. Do not extend its cooldown.
+      if (failed && now - Number(await failed.text()) < 86400000) return;
+      await failures.put(event.data.url, new Response(String(now)));
     } catch { /* Cache is optional when browser storage is restricted. */ }
   })());
 });
