@@ -2,10 +2,9 @@ name: Build and Deploy to dist branch
 
 on:
   workflow_dispatch: # 手动触发
-  # 如需在代码推送到 master 分支时也自动触发，可以取消下方注释：
-  # push:
-  #   branches:
-  #     - master
+  push:
+    branches:
+      - master
 
 permissions:
   contents: write
