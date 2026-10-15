@@ -1,11 +1,11 @@
 /* A tiny static-shell and favicon cache. No proxy, analytics or backend. */
-const VERSION = 'b941acb8fff0';
+const VERSION = '5fe712b8e84c';
 const SHELL = 'quiet-tab-shell-' + VERSION;
 const ICONS = 'quiet-tab-icons-v1';
 const FAILURES = 'quiet-tab-icon-failures-v1';
 const ROOT = new URL('./', self.location.href);
 const ASSETS = ['index.html', 'styles.css?v=' + VERSION, 'app.js?v=' + VERSION, 'favicon.svg'].map(path => new URL(path, ROOT).href);
-const ALLOWED_ICONS = new Set(["https://chatgpt.com/favicon.ico", "https://ng.117823.xyz/favicon.ico", "https://notes.zhiim.eu.org/favicon.ico", "https://rss.zhiim.eu.org/favicon.ico", "https://zb.zhiim.eu.org/favicon.ico", "https://zhiim.eu.org/favicon.ico"]);
+const ALLOWED_ICONS = new Set(["https://chatgpt.com/favicon.ico", "https://ng.117823.xyz/favicon.ico", "https://note.zhiim.eu.org/favicon.ico", "https://rss.zhiim.eu.org/favicon.ico", "https://zb.zhiim.eu.org/favicon.ico", "https://zhiim.eu.org/favicon.ico"]);
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
