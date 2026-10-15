@@ -86,7 +86,8 @@ function loadIcons(controlled) {
     if (location.protocol === 'https:' && source.protocol === 'http:') return;
     const img = document.createElement('img');
     img.alt = ''; img.width = 25; img.height = 25;
-    img.decoding = 'async'; img.loading = 'lazy'; img.referrerPolicy = 'no-referrer';
+    // Hidden images have no layout box, so lazy loading can wait forever for visibility.
+    img.decoding = 'async'; img.loading = 'eager'; img.referrerPolicy = 'no-referrer';
     img.hidden = true;
     img.addEventListener('load', () => { img.hidden = false; img.dataset.loaded = ''; }, { once: true });
     img.addEventListener('error', () => {

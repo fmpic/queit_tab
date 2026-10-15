@@ -35,7 +35,11 @@ function setup({ storageFails = false, networkFails = false } = {}) {
     },
     self: { location: { href: 'https://test.example/tab/sw.js' }, addEventListener(type, listener) { handlers[type] = listener; }, clients: { async claim() {} }, async skipWaiting() {} }
   });
-  vm.runInContext(readFileSync(new URL('../dist/sw.js', import.meta.url), 'utf8'), context);
+  // Keep cache tests independent of the user's current shortcut configuration.
+  const worker = readFileSync(new URL('../src/sw.js', import.meta.url), 'utf8')
+    .replace('@@VERSION@@', 'test')
+    .replace('@@ICONS@@', JSON.stringify([icon]));
+  vm.runInContext(worker, context);
   return { context, handlers, stores, get count() { return count; } };
 }
 const icon = 'https://github.com/favicon.ico';
