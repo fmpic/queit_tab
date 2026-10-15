@@ -79,20 +79,33 @@ document.addEventListener('keydown', event => {
   }
 });
 // Icons never delay the shell or the search box. Cache API is owned by the worker.
+const iconRequests = new WeakMap();
 function loadIcons(controlled) {
+  const worker = controlled ? navigator.serviceWorker.controller : null;
   document.querySelectorAll('[data-icon]').forEach(link => {
     const remote = link.dataset.icon;
     const source = new URL(remote);
     if (location.protocol === 'https:' && source.protocol === 'http:') return;
+    const previous = iconRequests.get(link);
+    if (previous) {
+      if (previous.image.dataset.loaded !== undefined) return;
+      if (previous.worker === worker && previous.image.isConnected) return;
+      previous.image.remove();
+    }
     const img = document.createElement('img');
+    iconRequests.set(link, { image: img, worker });
     img.alt = ''; img.width = 25; img.height = 25;
     // Hidden images have no layout box, so lazy loading can wait forever for visibility.
     img.decoding = 'async'; img.loading = 'eager'; img.referrerPolicy = 'no-referrer';
     img.hidden = true;
-    img.addEventListener('load', () => { img.hidden = false; img.dataset.loaded = ''; }, { once: true });
+    img.addEventListener('load', () => {
+      if (iconRequests.get(link)?.image !== img) return;
+      img.hidden = false; img.dataset.loaded = '';
+    }, { once: true });
     img.addEventListener('error', () => {
+      if (iconRequests.get(link)?.image !== img) return;
       img.remove();
-      if (controlled) navigator.serviceWorker.controller?.postMessage({ type: 'icon-failed', url: remote });
+      worker?.postMessage({ type: 'icon-failed', url: remote });
     }, { once: true });
     if (controlled) {
       const local = new URL('./__icon', location.href);
@@ -105,7 +118,14 @@ function loadIcons(controlled) {
 async function initIcons() {
   if (!('serviceWorker' in navigator) || !window.isSecureContext) { loadIcons(false); return; }
   try {
-    const registration = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+    const registration = navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+    if (navigator.serviceWorker.controller) {
+      // The active worker can serve cached icons while the update check runs.
+      loadIcons(true);
+      void registration.catch(() => { /* Existing worker remains usable if checking for updates fails. */ });
+      return;
+    }
+    await registration;
     if (!navigator.serviceWorker.controller) {
       let listener;
       let timer;
@@ -121,11 +141,14 @@ async function initIcons() {
       navigator.serviceWorker.removeEventListener('controllerchange', listener);
     }
     loadIcons(!!navigator.serviceWorker.controller);
-    // Keep registration referenced until icon startup is complete.
-    void registration;
   } catch { loadIcons(false); }
 }
 initIcons();
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  // During deployment the old worker may reject icons added by the new config.
+  // Retry failed or pending images when the new worker takes control.
+  navigator.serviceWorker.addEventListener('controllerchange', () => loadIcons(true));
+}
 
 // Restore instantly; fetching the daily quote never blocks search or icons.
 const quoteHeading = document.querySelector('#daily-quote');

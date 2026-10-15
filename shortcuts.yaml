@@ -3,13 +3,16 @@
 shortcuts:
   - name: Glance
     url: https://zhiim.eu.org
+    icon: https://zhiim.eu.org/static/1dcaffa9fa/favicon.svg
   - name: ReactFlux
     url: https://rss.zhiim.eu.org
   - name: SilverBullet
     url: https://note.zhiim.eu.org
+    icon: https://note.zhiim.eu.org/.client/favicon.svg
   - name: AriaNg
     url: https://ng.117823.xyz
   - name: ChatGPT
     url: https://chatgpt.com
+    icon: https://cdn.oaistatic.com/_next/static/media/favicon-32x32.be48395e.png
   - name: ZashBoard
     url: https://zb.zhiim.eu.org
