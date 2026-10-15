@@ -51,7 +51,7 @@ def build():
     esc = lambda value: html.escape(value, quote=True)
     cards = []
     for item in shortcuts:
-        cards.append(f'<a class="shortcut" href="{esc(item["url"])}" data-icon="{esc(item["icon"])}" aria-label="打开 {esc(item["name"])}" rel="noreferrer"><span class="shortcut-icon" aria-hidden="true"><span class="shortcut-letter">{esc(item["name"][0].upper())}</span></span><span class="shortcut-name">{esc(item["name"])}</span><span class="shortcut-domain">{esc(item["domain"])}</span></a>')
+        cards.append(f'<a class="shortcut" href="{esc(item["url"])}" data-icon="{esc(item["icon"])}" aria-label="打开 {esc(item["name"])}（新标签页）" target="_blank" rel="noopener noreferrer"><span class="shortcut-icon" aria-hidden="true"><span class="shortcut-letter">{esc(item["name"][0].upper())}</span></span><span class="shortcut-name">{esc(item["name"])}</span><span class="shortcut-domain">{esc(item["domain"])}</span></a>')
     page = content['index.html'].replace('@@SHORTCUTS@@', '\n'.join(cards)).replace('@@VERSION@@', version)
     if not shortcuts:
         page = page.replace('class="shortcuts-section"', 'class="shortcuts-section" hidden')

@@ -3,6 +3,10 @@ export function viewportScale(contentWidth, contentHeight, availableWidth, avail
   if (contentWidth <= 0 || contentHeight <= 0) return 1;
   return Math.max(0.01, Math.min(1, availableWidth / contentWidth, availableHeight / contentHeight));
 }
+// Keep the upward shift inside the space left after fitting the content.
+export function viewportOffset(contentHeight, scale, availableHeight, viewportHeight) {
+  return Math.max(0, Math.min(32, viewportHeight * 0.04, (availableHeight - contentHeight * scale) / 2));
+}
 export function installViewportFit(main) {
   let frame = 0;
   const fit = () => {
@@ -12,7 +16,10 @@ export function installViewportFit(main) {
     const vertical = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
     const width = Math.max(1, document.body.clientWidth - horizontal - 8);
     const height = Math.max(1, document.body.clientHeight - vertical - 8);
-    main.style.setProperty('--page-scale', String(viewportScale(main.offsetWidth, main.offsetHeight, width, height)));
+    const scale = viewportScale(main.offsetWidth, main.offsetHeight, width, height);
+    const offset = viewportOffset(main.offsetHeight, scale, height, document.body.clientHeight);
+    main.style.setProperty('--page-scale', String(scale));
+    main.style.setProperty('--page-offset', `${offset}px`);
   };
   const queue = () => { if (!frame) frame = requestAnimationFrame(fit); };
   window.addEventListener('resize', queue, { passive: true });

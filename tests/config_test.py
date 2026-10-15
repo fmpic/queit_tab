@@ -3,6 +3,10 @@ import tempfile
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from html.parser import HTMLParser
+from unittest.mock import patch
+import shutil
+import build
 from build import read_shortcuts
 
 class ConfigTest(unittest.TestCase):
@@ -24,6 +28,31 @@ class ConfigTest(unittest.TestCase):
                     with self.assertRaises(ValueError): self.read(yaml.safe_dump({'shortcuts':[item]}))
         for text in ['shortcuts: nope', 'shortcuts:\n - name: A', 'shortcuts: []\nunknown: true', 'shortcuts:\n - name: ""\n   url: https://example.com']:
             with self.assertRaises(ValueError): self.read(text)
+    def test_shortcuts_open_in_new_tabs(self):
+        class Links(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.shortcuts = []
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if tag == 'a' and attrs.get('class') == 'shortcut':
+                    self.shortcuts.append(attrs)
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            shutil.copytree(build.ROOT / 'src', root / 'src')
+            (root / 'shortcuts.yaml').write_text('shortcuts:\n - name: Test\n   url: https://example.com\n', encoding='utf-8')
+            with patch.object(build, 'ROOT', root):
+                build.build()
+            parser = Links()
+            parser.feed((root / 'dist' / 'index.html').read_text(encoding='utf-8'))
+            self.assertEqual(len(parser.shortcuts), 1)
+            link = parser.shortcuts[0]
+            self.assertEqual(link['href'], 'https://example.com')
+            self.assertEqual(link['target'], '_blank')
+            self.assertEqual(set(link['rel'].split()), {'noopener', 'noreferrer'})
+            self.assertIn('新标签页', link['aria-label'])
+
     def test_empty_list_allowed(self):
         self.assertEqual(self.read('shortcuts: []'), [])
 
