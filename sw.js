@@ -1,5 +1,5 @@
 /* A tiny static-shell and favicon cache. No proxy, analytics or backend. */
-const VERSION = 'c9554dffcea9';
+const VERSION = 'b941acb8fff0';
 const SHELL = 'quiet-tab-shell-' + VERSION;
 const ICONS = 'quiet-tab-icons-v1';
 const FAILURES = 'quiet-tab-icon-failures-v1';
