@@ -1,12 +1,12 @@
 /* A tiny static-shell and favicon cache. No proxy, analytics or backend. */
-const VERSION = '9088f783f310';
+const VERSION = '58758155ac77';
 const SHELL = 'quiet-tab-shell-' + VERSION;
 const ICONS = 'quiet-tab-icons-v1';
 // v1 refreshed the retry deadline on every page load; discard those markers once.
 const FAILURES = 'quiet-tab-icon-failures-v2';
 const ROOT = new URL('./', self.location.href);
 const ASSETS = ['index.html', 'styles.css?v=' + VERSION, 'app.js?v=' + VERSION, 'favicon.svg'].map(path => new URL(path, ROOT).href);
-const ALLOWED_ICONS = new Set(["https://cdn.oaistatic.com/_next/static/media/favicon-32x32.be48395e.png", "https://ng.117823.xyz/favicon.ico", "https://note.zhiim.eu.org/.client/favicon.svg", "https://rss.zhiim.eu.org/favicon.ico", "https://zb.zhiim.eu.org/favicon.ico", "https://zhiim.eu.org/static/1dcaffa9fa/favicon.svg"]);
+const ALLOWED_ICONS = new Set(["https://chatgpt.com/favicon.ico", "https://ng.117823.xyz/favicon.ico", "https://note.zhiim.eu.org/.client/favicon.svg", "https://rss.zhiim.eu.org/favicon.ico", "https://zb.zhiim.eu.org/favicon.ico", "https://zhiim.eu.org/static/1dcaffa9fa/favicon.svg"]);
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
